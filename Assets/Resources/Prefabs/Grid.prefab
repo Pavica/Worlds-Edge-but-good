@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &823743320902914061
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 823743320902914060}
+  - component: {fileID: 823743320902914059}
+  m_Layer: 6
+  m_Name: Grid
+  m_TagString: Ground
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &823743320902914060
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823743320902914061}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &823743320902914059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823743320902914061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47fc1bd113d7c2544bbb570e90403764, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  treePrefabs:
+  - {fileID: 145002, guid: 1d6bdc7c151f2ab4e983d27617c28696, type: 3}
+  - {fileID: 120390, guid: 53de38591ea096148be619f0f26551db, type: 3}
+  - {fileID: 134562, guid: d2ebf0828c2240b4cb8f6d695f40d3e5, type: 3}
+  - {fileID: 134562, guid: d2ebf0828c2240b4cb8f6d695f40d3e5, type: 3}
+  stonePrefabs:
+  - {fileID: 188480, guid: 02c97ae925d1d3143b4280d6e3eca352, type: 3}
+  - {fileID: 123282, guid: b11dc2557c5d3c245aa14244de74f403, type: 3}
+  - {fileID: 195346, guid: 2b17feabcfa782540ac917547c64adf5, type: 3}
+  - {fileID: 157058, guid: 18c4ac3c868fd584fbe72aa4a04875d5, type: 3}
+  terrainMaterial: {fileID: 2100000, guid: a8ca031e8227c534f8d5235ce1bd6bb5, type: 2}
+  edgeMaterial: {fileID: 2100000, guid: ce173c155b52231448f607949640e8af, type: 2}
+  grassColors:
+  - {r: 0.45882353, g: 0.7294118, b: 0.27450982, a: 0}
+  - {r: 0.4194818, g: 0.6698113, b: 0.24896757, a: 0}
+  - {r: 0.38489383, g: 0.6132076, b: 0.22792809, a: 0}
+  waterLevel: 0.3
+  scale: 0.1
+  treeNoiseScale: 0.05
+  treeDensity: 0.1
+  stoneDensity: 0.05
+  riverNoiseScale: 0.5
+  rivers: 5
+  size: 30
