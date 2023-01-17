@@ -5,6 +5,7 @@ using UnityEngine;
 public class MoveWithPlayer : MonoBehaviour
 {
     public GameObject player;
+    public int distanceBeforeMoving;
     
     void Update()
     {

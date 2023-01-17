@@ -57,10 +57,19 @@ MonoBehaviour:
   terrainMaterial: {fileID: 2100000, guid: a8ca031e8227c534f8d5235ce1bd6bb5, type: 2}
   edgeMaterial: {fileID: 2100000, guid: ce173c155b52231448f607949640e8af, type: 2}
   grassColors:
-  - {r: 0.45882353, g: 0.7294118, b: 0.27450982, a: 0}
-  - {r: 0.4194818, g: 0.6698113, b: 0.24896757, a: 0}
   - {r: 0.38489383, g: 0.6132076, b: 0.22792809, a: 0}
+  - {r: 0.4194818, g: 0.6698113, b: 0.24896757, a: 0}
+  - {r: 0.45882353, g: 0.7294118, b: 0.27450982, a: 0}
   waterLevel: 0.3
+  blockLevels:
+  - 0.4
+  - 0.5
+  - 0.6
+  - 0.7
+  - 0.8
+  - 0.9
+  - 1
+  heightMultiplier: 0.25
   scale: 0.1
   treeNoiseScale: 0.05
   treeDensity: 0.1
