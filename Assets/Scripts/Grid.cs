@@ -11,6 +11,8 @@ public class Grid : MonoBehaviour
     public Material edgeMaterial;
     public List<Color> grassColors;
     public float waterLevel = .4f;
+    public float[] blockLevels = new float[] { 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, .9f, 1};
+    public float heightMultiplier;
     public float scale = .1f;
     public float treeNoiseScale = .05f;
     public float treeDensity = .25f;
@@ -35,7 +37,7 @@ public class Grid : MonoBehaviour
         {
             for (int x = 0; x < size; x++)
             {
-                float noiseValue = Mathf.PerlinNoise(x * scale + xTerrainOffset, y * scale + yTerrainOffset);
+                float noiseValue = Mathf.PerlinNoise((x +xTerrainOffset) * scale, (y+yTerrainOffset) * scale);
                 noiseMap[x, y] = noiseValue;
             }
         }
@@ -59,8 +61,13 @@ public class Grid : MonoBehaviour
             {
                 float noiseValue = noiseMap[x, y];
                 //noiseValue -= falloffMap[x, y];
+                bool[] isblockLevels = new bool[blockLevels.Length];
+                for(int i=0; i<blockLevels.Length; i++)
+                {
+                    isblockLevels[i] = noiseValue < blockLevels[i];
+                }
                 bool isWater = noiseValue < waterLevel;
-                Cell cell = new Cell(isWater);
+                Cell cell = new Cell(isWater, isblockLevels);
                 grid[x, y] = cell;
             }
         }
@@ -71,6 +78,21 @@ public class Grid : MonoBehaviour
         DrawTexture(grid);
         GenerateTrees(grid);
         this.AddComponent<MeshCollider>();
+    }
+
+    float getProperHeight(Cell cell)
+    {
+        float height = 0;
+
+        for (int i = blockLevels.Length-1; i >= 0; i--)
+        {
+            if (cell.isBlockLevels[i])
+            {
+                height = i * heightMultiplier;
+            }
+        }
+
+        return height;
     }
 
     void GenerateRivers(Cell[,] grid)
@@ -133,12 +155,16 @@ public class Grid : MonoBehaviour
             for (int x = 0; x < size; x++)
             {
                 Cell cell = grid[x, y];
+                
+                float height = getProperHeight(cell);
+
                 if (!cell.isWater)
                 {
-                    Vector3 a = new Vector3(x - .5f, 0, y + .5f);
-                    Vector3 b = new Vector3(x + .5f, 0, y + .5f);
-                    Vector3 c = new Vector3(x - .5f, 0, y - .5f);
-                    Vector3 d = new Vector3(x + .5f, 0, y - .5f);
+
+                    Vector3 a = new Vector3(x - .5f, height, y + .5f);
+                    Vector3 b = new Vector3(x + .5f, height, y + .5f);
+                    Vector3 c = new Vector3(x - .5f, height, y - .5f);
+                    Vector3 d = new Vector3(x + .5f, height, y - .5f);
                     Vector2 uvA = new Vector2(x / (float)size, y / (float)size);
                     Vector2 uvB = new Vector2((x + 1) / (float)size, y / (float)size);
                     Vector2 uvC = new Vector2(x / (float)size, (y + 1) / (float)size);
@@ -175,59 +201,67 @@ public class Grid : MonoBehaviour
             for (int x = 0; x < size; x++)
             {
                 Cell cell = grid[x, y];
+
+                float height = getProperHeight(cell);
+
                 if (!cell.isWater)
                 {
-                    if (x <= 0 || grid[x - 1, y].isWater)
+                    
+                    Vector3 a = new Vector3(xTerrainOffset + x - .5f, height,  yTerrainOffset + y + .5f);
+                    Vector3 b = new Vector3(xTerrainOffset + x - .5f, height,  yTerrainOffset + y - .5f);
+                    Vector3 c = new Vector3(xTerrainOffset + x - .5f, height - 1, yTerrainOffset +  y + .5f);
+                    Vector3 d = new Vector3(xTerrainOffset + x - .5f, height - 1, yTerrainOffset +  y - .5f);
+                    Vector3[] v = new Vector3[] { a, b, c, b, d, c };
+                    for (int k = 0; k < 6; k++)
                     {
-                        Vector3 a = new Vector3(xTerrainOffset + x - .5f, 0,  yTerrainOffset + y + .5f);
-                        Vector3 b = new Vector3(xTerrainOffset + x - .5f, 0,  yTerrainOffset + y - .5f);
-                        Vector3 c = new Vector3(xTerrainOffset + x - .5f, -1, yTerrainOffset +  y + .5f);
-                        Vector3 d = new Vector3(xTerrainOffset + x - .5f, -1, yTerrainOffset +  y - .5f);
-                        Vector3[] v = new Vector3[] { a, b, c, b, d, c };
-                        for (int k = 0; k < 6; k++)
-                        {
-                            vertices.Add(v[k]);
-                            triangles.Add(triangles.Count);
-                        }
+                        vertices.Add(v[k]);
+                        triangles.Add(triangles.Count);
                     }
-                    if (x >= size - 1 || grid[x + 1, y].isWater)
+                    
+                    Vector3 a1 = new Vector3(xTerrainOffset + x + .5f, height, yTerrainOffset + y - .5f);
+                    Vector3 b1 = new Vector3(xTerrainOffset + x + .5f, height, yTerrainOffset + y + .5f);
+                    Vector3 c1 = new Vector3(xTerrainOffset + x + .5f, height - 1,yTerrainOffset + y - .5f);
+                    Vector3 d1 = new Vector3(xTerrainOffset + x + .5f, height - 1, yTerrainOffset + y + .5f);
+                    Vector3[] v1 = new Vector3[] { a1, b1, c1, b1, d1, c1 };
+                    for (int k = 0; k < 6; k++)
                     {
-                        Vector3 a = new Vector3(xTerrainOffset + x + .5f, 0, yTerrainOffset + y - .5f);
-                        Vector3 b = new Vector3(xTerrainOffset + x + .5f, 0, yTerrainOffset + y + .5f);
-                        Vector3 c = new Vector3(xTerrainOffset + x + .5f, -1,yTerrainOffset + y - .5f);
-                        Vector3 d = new Vector3(xTerrainOffset + x + .5f, -1, yTerrainOffset + y + .5f);
-                        Vector3[] v = new Vector3[] { a, b, c, b, d, c };
-                        for (int k = 0; k < 6; k++)
-                        {
-                            vertices.Add(v[k]);
-                            triangles.Add(triangles.Count);
-                        }
+                        vertices.Add(v1[k]);
+                        triangles.Add(triangles.Count);
                     }
-                    if (y <= 0 || grid[x, y - 1].isWater)
+                    
+                    Vector3 a2 = new Vector3(xTerrainOffset + x - .5f, height, yTerrainOffset + y - .5f);
+                    Vector3 b2 = new Vector3(xTerrainOffset + x + .5f, height, yTerrainOffset + y - .5f);
+                    Vector3 c2 = new Vector3(xTerrainOffset + x - .5f, height - 1, yTerrainOffset + y - .5f);
+                    Vector3 d2 = new Vector3(xTerrainOffset + x + .5f, height - 1, yTerrainOffset + y - .5f);
+                    Vector3[] v2 = new Vector3[] { a2, b2, c2, b2, d2, c2 };
+                    for (int k = 0; k < 6; k++)
                     {
-                        Vector3 a = new Vector3(xTerrainOffset + x - .5f, 0, yTerrainOffset + y - .5f);
-                        Vector3 b = new Vector3(xTerrainOffset + x + .5f, 0, yTerrainOffset + y - .5f);
-                        Vector3 c = new Vector3(xTerrainOffset + x - .5f, -1, yTerrainOffset + y - .5f);
-                        Vector3 d = new Vector3(xTerrainOffset + x + .5f, -1, yTerrainOffset + y - .5f);
-                        Vector3[] v = new Vector3[] { a, b, c, b, d, c };
-                        for (int k = 0; k < 6; k++)
-                        {
-                            vertices.Add(v[k]);
-                            triangles.Add(triangles.Count);
-                        }
+                        vertices.Add(v2[k]);
+                        triangles.Add(triangles.Count);
                     }
-                    if (y >= size - 1 || grid[x, y + 1].isWater)
+                    
+                    Vector3 a3 = new Vector3(xTerrainOffset + x + .5f, height, yTerrainOffset + y + .5f);
+                    Vector3 b3 = new Vector3(xTerrainOffset + x - .5f, height, yTerrainOffset + y + .5f);
+                    Vector3 c3 = new Vector3(xTerrainOffset + x + .5f, height - 1, yTerrainOffset + y + .5f);
+                    Vector3 d3 = new Vector3(xTerrainOffset + x - .5f, height - 1, yTerrainOffset + y + .5f);
+                    Vector3[] v3 = new Vector3[] { a3, b3, c3, b3, d3, c3 };
+                    
+                    for (int k = 0; k < 6; k++)
                     {
-                        Vector3 a = new Vector3(xTerrainOffset + x + .5f, 0, yTerrainOffset + y + .5f);
-                        Vector3 b = new Vector3(xTerrainOffset + x - .5f, 0, yTerrainOffset + y + .5f);
-                        Vector3 c = new Vector3(xTerrainOffset + x + .5f, -1, yTerrainOffset + y + .5f);
-                        Vector3 d = new Vector3(xTerrainOffset + x - .5f, -1, yTerrainOffset + y + .5f);
-                        Vector3[] v = new Vector3[] { a, b, c, b, d, c };
-                        for (int k = 0; k < 6; k++)
-                        {
-                            vertices.Add(v[k]);
-                            triangles.Add(triangles.Count);
-                        }
+                        vertices.Add(v3[k]);
+                        triangles.Add(triangles.Count);
+                    }
+
+                    //bottom
+                    Vector3 a4 = new Vector3(xTerrainOffset + x - .5f, height - 1, yTerrainOffset + y - .5f);
+                    Vector3 b4 = new Vector3(xTerrainOffset + x + .5f, height - 1, yTerrainOffset + y - .5f);
+                    Vector3 c4 = new Vector3(xTerrainOffset + x - .5f, height - 1, yTerrainOffset + y + .5f);
+                    Vector3 d4 = new Vector3(xTerrainOffset + x + .5f, height - 1, yTerrainOffset + y + .5f);
+                    Vector3[] v4 = new Vector3[] { a4, b4, c4, b4, d4, c4 };
+                    for (int k = 0; k < 6; k++)
+                    {
+                        vertices.Add(v4[k]);
+                        triangles.Add(triangles.Count);
                     }
                 }
             }
@@ -244,6 +278,28 @@ public class Grid : MonoBehaviour
 
         MeshRenderer meshRenderer = edgeObj.AddComponent<MeshRenderer>();
         meshRenderer.material = edgeMaterial;
+        meshRenderer.AddComponent<MeshCollider>();
+    }
+
+    
+    Color ColorBasedOnHeight(Cell cell)
+    {
+        float averagePerColor = (float) blockLevels.Length / grassColors.Count;
+
+        for(int i= 0; i < blockLevels.Length; i++)
+        {
+            if (cell.isBlockLevels[i])
+            {
+                for(int k = 0; k < grassColors.Count; k++)
+                {
+                    if(i < (k+1) * averagePerColor)
+                    {
+                        return grassColors[k];
+                    }
+                }
+            }
+        }
+        return grassColors[grassColors.Count-1];
     }
 
     void DrawTexture(Cell[,] grid)
@@ -255,10 +311,11 @@ public class Grid : MonoBehaviour
             for (int x = 0; x < size; x++)
             {
                 Cell cell = grid[x, y];
+
+                colorMap[y * size + x] = ColorBasedOnHeight(cell);
+
                 if (cell.isWater)
                     colorMap[y * size + x] = Color.blue;
-                else
-                    colorMap[y * size + x] = grassColors[Random.Range(0, grassColors.Count)];
             }
         }
         texture.filterMode = FilterMode.Point;
@@ -288,6 +345,8 @@ public class Grid : MonoBehaviour
             for (int x = 0; x < size; x++)
             {
                 Cell cell = grid[x, y];
+
+                float height = getProperHeight(cell);
                 if (!cell.isWater)
                 {
                     float vTree = Random.Range(0f, 1f);
@@ -296,14 +355,14 @@ public class Grid : MonoBehaviour
                     {
                         GameObject prefab = treePrefabs[Random.Range(0, treePrefabs.Length)];
                         GameObject tree = Instantiate(prefab, transform);
-                        tree.transform.position = new Vector3(x + xTerrainOffset, 0, y + yTerrainOffset);
+                        tree.transform.position = new Vector3(x + xTerrainOffset, height, y + yTerrainOffset);
                         tree.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360f), 0);
                         tree.transform.localScale = Vector3.one * Random.Range(.1f, .2f);
                     }else if(vStone < stoneDensity)
                     {
                         GameObject prefab = stonePrefabs[Random.Range(0, stonePrefabs.Length)];
                         GameObject stone = Instantiate(prefab, transform);
-                        stone.transform.position = new Vector3(x + xTerrainOffset, 0, y + yTerrainOffset);
+                        stone.transform.position = new Vector3(x + xTerrainOffset, height, y + yTerrainOffset);
                         stone.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360f), 0);
                         stone.transform.localScale = Vector3.one * Random.Range(.6f, .8f);
                     }
