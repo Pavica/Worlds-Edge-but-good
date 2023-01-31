@@ -7,6 +7,7 @@ TagManager:
   - Ground
   - Water
   - Plane
+  - rock
   layers:
   - Default
   - TransparentFX

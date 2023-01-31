@@ -109,6 +109,7 @@ public class EnemyAiTutorial : MonoBehaviour
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
     }
+
     private void ResetAttack()
     {
         //Destroy previous obect

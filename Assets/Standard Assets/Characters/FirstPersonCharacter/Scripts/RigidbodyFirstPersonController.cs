@@ -138,6 +138,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
             {
                 m_Jump = true;
             }
+
+            hitEnemy();
         }
 
 
@@ -263,6 +265,25 @@ namespace UnityStandardAssets.Characters.FirstPerson
             if (!m_PreviouslyGrounded && m_IsGrounded && m_Jumping)
             {
                 m_Jumping = false;
+            }
+        }
+
+        //our code ----------------------------------------------------------------
+        public GameObject sword;
+
+        private void OnCollisionEnter(Collision collision)
+        {
+             if (collision.gameObject.tag == "rock")
+             {
+                Debug.Log("Aua, Stein");
+             }
+        }
+
+        private void hitEnemy()
+        {
+            if (Input.GetKey(KeyCode.Mouse0))
+            {
+                sword.transform.transform.Rotate(0, 0, -60, Space.Self);
             }
         }
     }
