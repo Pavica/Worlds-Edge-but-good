@@ -1,6 +1,8 @@
 ﻿
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityStandardAssets.Characters.FirstPerson;
 
 public class EnemyAiTutorial : MonoBehaviour
 {
@@ -10,7 +12,9 @@ public class EnemyAiTutorial : MonoBehaviour
 
     public LayerMask whatIsGround, whatIsPlayer;
 
-    public float health;
+    public float maxHealth;
+    float health;
+    public float damage;
 
     //Patroling
     public Vector3 walkPoint;
@@ -34,12 +38,17 @@ public class EnemyAiTutorial : MonoBehaviour
 
     Vector3 velocity = Vector3.zero;
 
-    private void Awake()
+    public HealthBar healthBar;
+
+    private void Start()
     {
         player = GameObject.Find("RigidBodyFPSController").transform;
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
         agent.updatePosition = false;
+
+        health = maxHealth;
+        healthBar.SetMaxHealth(maxHealth);
     }
 
     private void Update()
@@ -94,13 +103,15 @@ public class EnemyAiTutorial : MonoBehaviour
     {
         //Make sure enemy doesn't move
         agent.SetDestination(transform.position);
-
-        transform.LookAt(player);
+        
+        transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
 
         if (!alreadyAttacked)
         {
             ///Attack code here
-            Rigidbody rb = Instantiate(projectile, transform.position, Quaternion.identity).GetComponent<Rigidbody>();
+            Rigidbody rb = Instantiate(projectile, transform.position + transform.forward, Quaternion.identity).GetComponent<Rigidbody>();
+            rb.isKinematic = false;
+            rb.useGravity = true;
             rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
             rb.AddForce(transform.up * 8f, ForceMode.Impulse);
             ///End of attack code
@@ -118,11 +129,12 @@ public class EnemyAiTutorial : MonoBehaviour
         alreadyAttacked = false;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         health -= damage;
 
         if (health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
+        healthBar.SetHealth(health);
     }
     private void DestroyEnemy()
     {
@@ -135,5 +147,24 @@ public class EnemyAiTutorial : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, attackRange);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightRange);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Weapon")
+        {
+            Debug.Log("Player hit the enemey");
+            //add knockback somehow (very hard)
+            StartCoroutine(changeColorAfterHit(0.25f));
+            TakeDamage(player.GetComponent<RigidbodyFirstPersonController>().damage);
+            Debug.Log("Enemy HP:" + health);
+        }
+    }
+
+    IEnumerator changeColorAfterHit(float time)
+    {
+        transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
+        yield return new WaitForSecondsRealtime(time);
+        transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = Color.white;
     }
 }

@@ -41,7 +41,7 @@ public class Grid : MonoBehaviour
                 noiseMap[x, y] = noiseValue;
             }
         }
-
+        /*
         float[,] falloffMap = new float[size, size];
         for (int y = 0; y < size; y++)
         {
@@ -53,7 +53,7 @@ public class Grid : MonoBehaviour
                 falloffMap[x, y] = Mathf.Pow(v, 3f) / (Mathf.Pow(v, 3f) + Mathf.Pow(2.2f - 2.2f * v, 3f));
             }
         }
-
+        */
         grid = new Cell[size, size];
         for (int y = 0; y < size; y++)
         {
@@ -77,7 +77,17 @@ public class Grid : MonoBehaviour
         DrawEdgeMesh(grid);
         DrawTexture(grid);
         GenerateTrees(grid);
+
+
+        foreach (Transform t in transform)
+        {
+            t.gameObject.layer = 6;
+            t.gameObject.tag = "Ground";
+        }
+
         this.AddComponent<MeshCollider>();
+
+
     }
 
     float getProperHeight(Cell cell)
@@ -156,27 +166,23 @@ public class Grid : MonoBehaviour
             {
                 Cell cell = grid[x, y];
                 
-                float height = getProperHeight(cell);
+                float height = cell.isWater ? -heightMultiplier : getProperHeight(cell);
 
-                if (!cell.isWater)
+                Vector3 a = new Vector3(x - .5f, height, y + .5f);
+                Vector3 b = new Vector3(x + .5f, height, y + .5f);
+                Vector3 c = new Vector3(x - .5f, height, y - .5f);
+                Vector3 d = new Vector3(x + .5f, height, y - .5f);
+                Vector2 uvA = new Vector2(x / (float)size, y / (float)size);
+                Vector2 uvB = new Vector2((x + 1) / (float)size, y / (float)size);
+                Vector2 uvC = new Vector2(x / (float)size, (y + 1) / (float)size);
+                Vector2 uvD = new Vector2((x + 1) / (float)size, (y + 1) / (float)size);
+                Vector3[] v = new Vector3[] { a, b, c, b, d, c };
+                Vector2[] uv = new Vector2[] { uvA, uvB, uvC, uvB, uvD, uvC };
+                for (int k = 0; k < 6; k++)
                 {
-
-                    Vector3 a = new Vector3(x - .5f, height, y + .5f);
-                    Vector3 b = new Vector3(x + .5f, height, y + .5f);
-                    Vector3 c = new Vector3(x - .5f, height, y - .5f);
-                    Vector3 d = new Vector3(x + .5f, height, y - .5f);
-                    Vector2 uvA = new Vector2(x / (float)size, y / (float)size);
-                    Vector2 uvB = new Vector2((x + 1) / (float)size, y / (float)size);
-                    Vector2 uvC = new Vector2(x / (float)size, (y + 1) / (float)size);
-                    Vector2 uvD = new Vector2((x + 1) / (float)size, (y + 1) / (float)size);
-                    Vector3[] v = new Vector3[] { a, b, c, b, d, c };
-                    Vector2[] uv = new Vector2[] { uvA, uvB, uvC, uvB, uvD, uvC };
-                    for (int k = 0; k < 6; k++)
-                    {
-                        vertices.Add(v[k]);
-                        triangles.Add(triangles.Count);
-                        uvs.Add(uv[k]);
-                    }
+                    vertices.Add(v[k]);
+                    triangles.Add(triangles.Count);
+                    uvs.Add(uv[k]);
                 }
             }
         }
@@ -315,7 +321,7 @@ public class Grid : MonoBehaviour
                 colorMap[y * size + x] = ColorBasedOnHeight(cell);
 
                 if (cell.isWater)
-                    colorMap[y * size + x] = Color.blue;
+                    colorMap[y * size + x] = new Color(202/255f, 150/255f, 90/255f);
             }
         }
         texture.filterMode = FilterMode.Point;

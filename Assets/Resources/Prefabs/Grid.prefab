@@ -75,5 +75,5 @@ MonoBehaviour:
   treeDensity: 0.1
   stoneDensity: 0.05
   riverNoiseScale: 0.5
-  rivers: 5
-  size: 30
+  rivers: 3
+  size: 20
