@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class EndlessTerrain : MonoBehaviour
 {
-
 	public const float maxViewDst = 40;
 	public Transform viewer;
 	public GameObject grid;

@@ -8,7 +8,6 @@ public class PlaneNavigationBaker : MonoBehaviour
     public NavMeshSurface surface;
     public GameObject player;
     
-
     private void Start()
     {
         player = GameObject.Find("RigidBodyFPSController");

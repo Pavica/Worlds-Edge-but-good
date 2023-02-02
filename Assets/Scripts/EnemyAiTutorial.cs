@@ -167,4 +167,16 @@ public class EnemyAiTutorial : MonoBehaviour
         yield return new WaitForSecondsRealtime(time);
         transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = Color.white;
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        //enemies hit each other
+        if (collision.gameObject.tag == "rock")
+        {
+            Debug.Log("Enemy hit another enemy");
+            TakeDamage(damage);
+
+            Debug.Log("Enemy HP:" + health);
+        }
+    }
 }
