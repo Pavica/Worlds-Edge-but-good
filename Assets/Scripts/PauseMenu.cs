@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class PauseMenu : MonoBehaviour
 {
-    public static bool GamePaused = false;
+    public bool GamePaused = false;
     public int points;
     public int xp;
     public int nextLevel;
@@ -22,7 +22,7 @@ public class PauseMenu : MonoBehaviour
     public Text experiencePoints;
 
     // Called at the start to set all the values
-    private void Start()
+    void Start()
     {
         points = 1;
         xp = 0;
@@ -43,10 +43,12 @@ public class PauseMenu : MonoBehaviour
         if (GamePaused)
         {
             Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
         else
         { 
             Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 }
 

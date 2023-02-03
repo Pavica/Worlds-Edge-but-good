@@ -129,6 +129,7 @@ using UnityStandardAssets.Characters.FirstPerson;
 
             anim = sword.GetComponent<Animator>();
             enemy = GameObject.Find("Enemy").transform;
+            pauseMenu = GameObject.Find("PauseMenuCanvas");
             StartCoroutine(spawnEnemy(5));
         }
 
@@ -136,11 +137,14 @@ using UnityStandardAssets.Characters.FirstPerson;
         {
             while (true)
             {
-                float x = UnityEngine.Random.Range(transform.position.x - 10, transform.position.x + 10);
-                float z = UnityEngine.Random.Range(transform.position.z - 10, transform.position.z + 10);
-                Instantiate(enemy, new Vector3(x, -2, z), Quaternion.identity);
-                yield return new WaitForSecondsRealtime(time);
-        }
+                if(!pauseMenu.GetComponent<PauseMenu>().GamePaused)
+                {
+                    float x = UnityEngine.Random.Range(transform.position.x - 10, transform.position.x + 10);
+                    float z = UnityEngine.Random.Range(transform.position.z - 10, transform.position.z + 10);
+                    Instantiate(enemy, new Vector3(x, -2, z), Quaternion.identity, GameObject.Find("Enemies").transform);
+                }
+            yield return new WaitForSecondsRealtime(time);
+            }
         }
 
     private void Update()
@@ -291,6 +295,7 @@ using UnityStandardAssets.Characters.FirstPerson;
         public Animator anim;
         public Transform enemy;
         public HealthBar healthBar;
+        public GameObject pauseMenu;
 
         public float damage;
         float health;
@@ -315,9 +320,21 @@ using UnityStandardAssets.Characters.FirstPerson;
             healthBar.SetHealth(health);
         }
 
+        public void resetHealth()
+        {
+            health = maxHealth;
+            healthBar.SetHealth(maxHealth);
+        }
+
         private void DestroyPlayer()
         {
-            Destroy(gameObject);
+            gameObject.transform.position = new Vector3(0, 5, 0);
+            resetHealth();
+            
+            foreach (Transform child in GameObject.Find("Enemies").transform)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
         private void hitEnemy()
@@ -338,6 +355,4 @@ using UnityStandardAssets.Characters.FirstPerson;
 
             }
         }
-
-   
     }
