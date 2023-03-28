@@ -29,7 +29,6 @@ public class HealthBar : MonoBehaviour
 		fill.color = gradient.Evaluate(slider.normalizedValue);
 
 		healthText.SetText(health + "/" + maxHealth);
-
 	}
 
 }

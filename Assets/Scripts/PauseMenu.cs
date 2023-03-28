@@ -21,12 +21,25 @@ public class PauseMenu : MonoBehaviour
     public Text availablePoints;
     public Text experiencePoints;
 
+
+    public Text movementSpeedValue;
+    public Text attackSpeedValue;
+    public Text attackDamageValue;
+    public Text healthValue;
+
+    public HealthBar healthBar;
+    public RigidbodyFirstPersonController playerScript;
+
+
     // Called at the start to set all the values
     void Start()
     {
         points = 1;
         xp = 0;
         nextLevel = 100;
+        findButtons();
+        Resume();
+
     }
 
     // Update is called once per frame
@@ -51,68 +64,31 @@ public class PauseMenu : MonoBehaviour
             Cursor.visible = false;
         }
 }
-
-    public void Resume()
-    {
-        pauseMenuUI.SetActive(false);
-        attributesGUI.SetActive(false);
-        Time.timeScale = 1f;
-        GamePaused = false;
-    }
-
+    // Functions
     public void Pause()
     {
-        pauseMenuUI.SetActive(true);
-        attributesGUI.SetActive(true);
+        //pauseMenuUI.SetActive(true);
+        //attributesGUI.SetActive(true);
+        pauseMenuUI.transform.localScale = new Vector3(1, 1, 1);
+        attributesGUI.transform.localScale = new Vector3(1, 1, 1);
         Time.timeScale = 0f;
         GamePaused = true;
+        updateStatsText();
+    }
+    public void Resume()
+    {
+        //pauseMenuUI.SetActive(false);
+        //attributesGUI.SetActive(false);
+        pauseMenuUI.transform.localScale = new Vector3(0, 0, 0);
+        attributesGUI.transform.localScale = new Vector3(0, 0, 0);
+        Time.timeScale = 1f;
+        GamePaused = false;
     }
 
     public void Quit()
     {
         Debug.Log("QUIT!");
         Application.Quit();
-    }
-
-    public void AddHealth()
-    {
-        findButtons();
-        Debug.Log("Health");
-        points--;
-        updatePointsText();
-        //Add healthpoints
-        if (points == 0)
-            disableButtons();
-    }
-
-    public void AddAttackDamage()
-    {
-        findButtons();
-        Debug.Log("Damage");
-        points--;
-        updatePointsText();
-        if (points == 0)
-            disableButtons();
-    }
-
-    public void AddAttackSpeed()
-    {
-        findButtons();
-        Debug.Log("AttSpeed");
-        points--;
-        updatePointsText();
-        if (points == 0)
-            disableButtons();
-    }
-
-    public void AddMoveSpeed()
-    {
-        findButtons();
-        Debug.Log("MoveSpeed");
-        points--;
-        updatePointsText();
-        if (points == 0)
-            disableButtons();
     }
 
     // Function to set all buttons
@@ -146,17 +122,21 @@ public class PauseMenu : MonoBehaviour
     }
 
     // Called after every action that adds XP
-    public void addXP()
+    // Doesnt work because you can not acces xp while the pause menu is disabled !!!!!!!!!!!!!!!!!
+    public void addXP(int xpValue)
     {
-        xp += 10;
-        if (xp > nextLevel)
+        xp += xpValue;
+        if (xp >= nextLevel)
         {
             addPoint();
             xp -= nextLevel;
         }
+        updateXPText();
+        Debug.Log(xp);
     }
 
     // Called after Experience Points are updated, displays the current XP
+    // Doesnt work because you can not acces xp while the pause menu is disabled !!!!!!!!!!!!!!!!!
     public void updateXPText()
     {
         experiencePoints = GameObject.Find("ExperiencePoints").GetComponent<Text>();
@@ -168,5 +148,75 @@ public class PauseMenu : MonoBehaviour
     {
         availablePoints = GameObject.Find("PointsAvailable").GetComponent<Text>();
         availablePoints.text = "Points available: " + points;
+    }
+    
+    public void AddHealth()
+    {
+        findButtons();
+        Debug.Log("Health");
+        points--;
+        updatePointsText();
+        playerScript.maxHealth += 10;
+        healthBar.SetMaxHealth(playerScript.maxHealth);
+        Debug.Log(playerScript.maxHealth);
+        if (points <= 0)
+        {
+            disableButtons();
+        }
+        updateStatsText();
+    }
+
+    public void AddAttackDamage()
+    {
+        findButtons();
+        Debug.Log("Damage");
+        points--;
+        updatePointsText();
+        playerScript.damage += 2;
+        if (points <= 0)
+        {
+            disableButtons();
+        }
+        updateStatsText();
+    }
+
+    public void AddAttackSpeed()
+    {
+        findButtons();
+        Debug.Log("AttSpeed");
+        points--;
+        updatePointsText();
+        playerScript.attackSpeedAmount *= 1.1f;
+        if (points <= 0)
+        {
+            disableButtons();
+        }
+        updateStatsText();
+    }
+
+    public void AddMoveSpeed()
+    {
+        findButtons();
+        Debug.Log("MoveSpeed");
+        points--;
+        updatePointsText();
+        if (points <= 0)
+        {
+            disableButtons();
+        }
+
+        playerScript.ForwardSpeed *= 1.1f;
+        playerScript.BackwardSpeed *= 1.1f;
+        playerScript.StrafeSpeed *= 1.1f;
+        updateStatsText();
+    }
+
+    // Called after stats are updated, displays the current values
+    public void updateStatsText()
+    {
+        GameObject.Find("MovementSpeedText").GetComponent<Text>().text = " Movement Speed: " + playerScript.ForwardSpeed;
+        GameObject.Find("AttackSpeedText").GetComponent<Text>().text = " Attack Speed: " + playerScript.attackSpeedAmount;
+        GameObject.Find("ADText").GetComponent<Text>().text = " Attack Damage: " + playerScript.damage;
+        GameObject.Find("HealthText").GetComponent<Text>().text = " Health: " + playerScript.maxHealth;
     }
 }
