@@ -26,11 +26,16 @@ public class EnemyAiTutorial : MonoBehaviour
     bool alreadyAttacked;
     public GameObject projectile;
 
+    public enum AttackType {range, close};
+    public AttackType type;
+
     //States
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
 
     public Rigidbody rb;
+
+    public Animator sharkAttack;
 
 
     //AI motion
@@ -109,16 +114,35 @@ public class EnemyAiTutorial : MonoBehaviour
         if (!alreadyAttacked)
         {
             ///Attack code here
-            Rigidbody rb = Instantiate(projectile, transform.position + transform.forward, Quaternion.identity).GetComponent<Rigidbody>();
-            rb.isKinematic = false;
-            rb.useGravity = true;
-            rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
-            rb.AddForce(transform.up * 8f, ForceMode.Impulse);
+            if(type == AttackType.close)
+            {
+                closeAttack();
+            }
+            else
+            {
+                rangeAttack();
+            }
+            
             ///End of attack code
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
+    }
+
+    private void rangeAttack()
+    {
+        Rigidbody rb = Instantiate(projectile, transform.position + transform.forward, Quaternion.identity).GetComponent<Rigidbody>();
+        rb.isKinematic = false;
+        rb.useGravity = true;
+        rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
+        rb.AddForce(transform.up * 8f, ForceMode.Impulse);
+    }
+
+    private void closeAttack()
+    {
+        player.GetComponent<RigidbodyFirstPersonController>().TakeDamage(damage);
+        sharkAttack.SetTrigger("attack");
     }
 
     private void ResetAttack()

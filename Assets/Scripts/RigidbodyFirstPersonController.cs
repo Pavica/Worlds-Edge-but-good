@@ -142,8 +142,8 @@ using UnityStandardAssets.Characters.FirstPerson;
                 {
                     float x = UnityEngine.Random.Range(transform.position.x - 10, transform.position.x + 10);
                     float z = UnityEngine.Random.Range(transform.position.z - 10, transform.position.z + 10);
-                    Instantiate(enemy, new Vector3(x, -2, z), Quaternion.identity, GameObject.Find("Enemies").transform);
-                    Instantiate(enemyS, new Vector3(x, -2, z), Quaternion.identity, GameObject.Find("Enemies").transform);
+                    Instantiate(enemy, new Vector3(6, -2, z), Quaternion.identity, GameObject.Find("Enemies").transform);
+                    Instantiate(enemyS, new Vector3(3, -2, z), Quaternion.identity, GameObject.Find("Enemies").transform);
                 }
             yield return new WaitForSecondsRealtime(time);
             }
