@@ -129,8 +129,9 @@ using UnityStandardAssets.Characters.FirstPerson;
 
             anim = sword.GetComponent<Animator>();
             enemy = GameObject.Find("Enemy").transform;
+            enemyS = GameObject.Find("EnemyS").transform;
             pauseMenu = GameObject.Find("PauseMenuCanvas");
-            StartCoroutine(spawnEnemy(5));
+            StartCoroutine(spawnEnemy(50));
         }
 
         IEnumerator spawnEnemy(float time)
@@ -142,6 +143,7 @@ using UnityStandardAssets.Characters.FirstPerson;
                     float x = UnityEngine.Random.Range(transform.position.x - 10, transform.position.x + 10);
                     float z = UnityEngine.Random.Range(transform.position.z - 10, transform.position.z + 10);
                     Instantiate(enemy, new Vector3(x, -2, z), Quaternion.identity, GameObject.Find("Enemies").transform);
+                    Instantiate(enemyS, new Vector3(x, -2, z), Quaternion.identity, GameObject.Find("Enemies").transform);
                 }
             yield return new WaitForSecondsRealtime(time);
             }
@@ -294,6 +296,7 @@ using UnityStandardAssets.Characters.FirstPerson;
         public GameObject sword;
         public Animator anim;
         public Transform enemy;
+        public Transform enemyS;
         public HealthBar healthBar;
         public GameObject pauseMenu;
 
@@ -307,8 +310,11 @@ using UnityStandardAssets.Characters.FirstPerson;
             {
                 Debug.Log("Enemy hit the player");
                 TakeDamage(enemy.GetComponent<EnemyAiTutorial>().damage);
-                
-                Debug.Log("Player HP:" + health);
+
+                Debug.Log("Shark hit the player");
+                TakeDamage(enemyS.GetComponent<EnemyAiTutorial>().damage);
+
+            Debug.Log("Player HP:" + health);
             }
         }
 
