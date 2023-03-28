@@ -282,6 +282,7 @@ MonoBehaviour:
   sharkAttack: {fileID: 0}
   speed: 4
   healthBar: {fileID: 1957001963}
+  pauseMenu: {fileID: 6767769906143053836}
 --- !u!54 &97897250
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2032,6 +2033,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grid
       objectReference: {fileID: 0}
+    - target: {fileID: 823743320902914061, guid: 689fe535361afac4e838c293d4d5f24f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 689fe535361afac4e838c293d4d5f24f, type: 3}
 --- !u!1 &1353076902
@@ -2565,6 +2570,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 100006, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
   m_PrefabInstance: {fileID: 1418002592}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1417971207 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 11400004, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
+  m_PrefabInstance: {fileID: 1418002592}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1417971206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81c9795a96c094f4cbde4d65546aa9b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1418002592
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2677,6 +2693,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
+      propertyPath: JumpForce
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
       propertyPath: healthBar
       value: 
       objectReference: {fileID: 1123979568}
@@ -2688,6 +2708,22 @@ PrefabInstance:
       propertyPath: pauseMenu
       value: 
       objectReference: {fileID: 6767769906143053839}
+    - target: {fileID: 11400004, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
+      propertyPath: StrafeSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
+      propertyPath: ForwardSpeed
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
+      propertyPath: BackwardSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
+      propertyPath: RunMultiplier
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
       propertyPath: camHeightWater
       value: 0.5
@@ -5010,7 +5046,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6767769905758289585
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5177,6 +5213,12 @@ MonoBehaviour:
   movementSpeedButton: {fileID: 0}
   availablePoints: {fileID: 0}
   experiencePoints: {fileID: 0}
+  movementSpeedValue: {fileID: 0}
+  attackSpeedValue: {fileID: 0}
+  attackDamageValue: {fileID: 0}
+  healthValue: {fileID: 0}
+  healthBar: {fileID: 1123979568}
+  playerScript: {fileID: 1417971207}
 --- !u!114 &6767769906143053837
 MonoBehaviour:
   m_ObjectHideFlags: 0

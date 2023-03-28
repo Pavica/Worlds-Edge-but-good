@@ -44,6 +44,7 @@ public class EnemyAiTutorial : MonoBehaviour
     Vector3 velocity = Vector3.zero;
 
     public HealthBar healthBar;
+    public PauseMenu pauseMenu;
 
     private void Start()
     {
@@ -163,6 +164,7 @@ public class EnemyAiTutorial : MonoBehaviour
     private void DestroyEnemy()
     {
         Destroy(gameObject);
+        pauseMenu.addXP(50);
     }
 
     private void OnDrawGizmosSelected()
