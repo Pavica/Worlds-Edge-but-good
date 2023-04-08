@@ -44,10 +44,6 @@ public class EnemyAiTutorial : MonoBehaviour
 
     public Animator attack;
 
-
-    //AI motion
-    [SerializeField] private int speed;
-
     Vector3 velocity = Vector3.zero;
 
     //Player and Enemy Health / Level
@@ -138,10 +134,7 @@ public class EnemyAiTutorial : MonoBehaviour
         GetComponent<NavMeshAgent>().updatePosition = true;
         GetComponent<NavMeshAgent>().updateRotation = true;
 
-        if (agent.speed == 0)
-        {
-            agent.speed = speed;
-        }
+        
         if (GetComponent<NavMeshAgent>().isOnNavMesh)
         {
             agent.SetDestination(player.transform.position);

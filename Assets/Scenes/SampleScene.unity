@@ -1707,6 +1707,7 @@ MonoBehaviour:
   - Sharks
   - Slimes
   pauseMenu: {fileID: 6767769906143053836}
+  wall: {fileID: 1451356608}
 --- !u!1 &400136414 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 823743320902914061, guid: 689fe535361afac4e838c293d4d5f24f, type: 3}
@@ -3023,7 +3024,7 @@ MonoBehaviour:
   baseXp: 15
   walkPoint: {x: 0, y: 0, z: 0}
   walkPointRange: 10
-  timeBetweenAttacks: 4
+  timeBetweenAttacks: 3
   projectile: {fileID: 878335382}
   type: 1
   sightRange: 10
@@ -3032,7 +3033,7 @@ MonoBehaviour:
   playerInAttackRange: 0
   rb: {fileID: 779356620}
   attack: {fileID: 1332089395}
-  speed: 2
+  speed: 3
   healthBar: {fileID: 1594213804}
   pauseMenu: {fileID: 6767769906143053836}
   healthBarPlayer: {fileID: 1123979568}
@@ -3049,7 +3050,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 2
+  m_Speed: 3
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -5650,7 +5651,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1451356608}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -100, z: -5}
+  m_LocalPosition: {x: 0, y: -100, z: 0}
   m_LocalScale: {x: 10, y: 10, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []

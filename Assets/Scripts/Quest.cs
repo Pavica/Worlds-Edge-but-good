@@ -29,6 +29,7 @@ public class Quest : MonoBehaviour
     public string[] enemyTypes;
 
     public PauseMenu pauseMenu;
+    public GameObject wall;
 
     void Start()
     {
@@ -55,6 +56,7 @@ public class Quest : MonoBehaviour
         {
             currentKills = 0;
             questCounter++;
+            wall.transform.position = new Vector3(0, -100, 0);
 
             currentQuest = quests[questCounter];
             pauseMenu.addPoint(amountOfPoints);
