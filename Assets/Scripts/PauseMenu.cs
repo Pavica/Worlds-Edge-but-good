@@ -3,13 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
     public bool GamePaused = false;
     public int points;
-    public int xp;
-    public int nextLevel;
+
+    public int healthLevel;
+    public int damageLevel;
+    public int speedLevel;
+    public int attackSpeedLevel;
+
     public GameObject pauseMenuUI;
     public GameObject attributesGUI;
 
@@ -28,15 +35,15 @@ public class PauseMenu : MonoBehaviour
     public Text healthValue;
 
     public HealthBar healthBar;
+    public XpBar xpBar;
     public RigidbodyFirstPersonController playerScript;
+    public Animator sword;
 
 
     // Called at the start to set all the values
     void Start()
     {
-        points = 1;
-        xp = 0;
-        nextLevel = 100;
+        updatePointsText();
         findButtons();
         Resume();
 
@@ -87,8 +94,7 @@ public class PauseMenu : MonoBehaviour
 
     public void Quit()
     {
-        Debug.Log("QUIT!");
-        Application.Quit();
+        SceneManager.LoadScene(0);
     }
 
     // Function to set all buttons
@@ -110,9 +116,9 @@ public class PauseMenu : MonoBehaviour
     }
 
     // Called by addXP-function if the amount of XP surpases the XP required for the next level
-    public void addPoint()
+    public void addPoint(int amountOfPoints)
     {
-        points++;
+        points+= amountOfPoints;
         addHealthButton.interactable = true;
         attackDamageButton.interactable = true;
         attackSpeedButton.interactable = true;
@@ -121,27 +127,6 @@ public class PauseMenu : MonoBehaviour
         updatePointsText();
     }
 
-    // Called after every action that adds XP
-    // Doesnt work because you can not acces xp while the pause menu is disabled !!!!!!!!!!!!!!!!!
-    public void addXP(int xpValue)
-    {
-        xp += xpValue;
-        if (xp >= nextLevel)
-        {
-            addPoint();
-            xp -= nextLevel;
-        }
-        updateXPText();
-        Debug.Log(xp);
-    }
-
-    // Called after Experience Points are updated, displays the current XP
-    // Doesnt work because you can not acces xp while the pause menu is disabled !!!!!!!!!!!!!!!!!
-    public void updateXPText()
-    {
-        experiencePoints = GameObject.Find("ExperiencePoints").GetComponent<Text>();
-        experiencePoints.text = "XP: " + xp + "/" + nextLevel;
-    }
 
     // Called after points are updated, displays the current available points
     public void updatePointsText()
@@ -155,9 +140,12 @@ public class PauseMenu : MonoBehaviour
         findButtons();
         Debug.Log("Health");
         points--;
+        healthLevel++;
+        updateLevelText("health", healthLevel);
         updatePointsText();
-        playerScript.maxHealth += 10;
-        healthBar.SetMaxHealth(playerScript.maxHealth);
+        playerScript.maxHealth = (float)Math.Round(Mathf.Log(5 + healthLevel - 1, 5) * playerScript.baseMaxHealth,1); 
+        healthBar.setMaxHealth(playerScript.maxHealth);
+        playerScript.health = playerScript.maxHealth;
         Debug.Log(playerScript.maxHealth);
         if (points <= 0)
         {
@@ -171,8 +159,10 @@ public class PauseMenu : MonoBehaviour
         findButtons();
         Debug.Log("Damage");
         points--;
+        damageLevel++;
+        updateLevelText("damage", damageLevel);
         updatePointsText();
-        playerScript.damage += 2;
+        playerScript.damage = (float)Math.Round(Mathf.Log(5 + damageLevel - 1, 5) * playerScript.baseDamage,1);
         if (points <= 0)
         {
             disableButtons();
@@ -185,8 +175,11 @@ public class PauseMenu : MonoBehaviour
         findButtons();
         Debug.Log("AttSpeed");
         points--;
+        attackSpeedLevel++;
+        updateLevelText("attackSpeed", attackSpeedLevel);
         updatePointsText();
-        playerScript.attackSpeedAmount *= 1.1f;
+        playerScript.attackSpeedAmount = (float)Math.Round(Mathf.Log(8 + attackSpeedLevel - 1, 8) * playerScript.baseAttackSpeed, 2);
+        sword.SetFloat("attackSpeed", playerScript.attackSpeedAmount);
         if (points <= 0)
         {
             disableButtons();
@@ -199,24 +192,31 @@ public class PauseMenu : MonoBehaviour
         findButtons();
         Debug.Log("MoveSpeed");
         points--;
+        speedLevel++;
+        updateLevelText("speed", speedLevel);
         updatePointsText();
         if (points <= 0)
         {
             disableButtons();
         }
-
-        playerScript.ForwardSpeed *= 1.1f;
-        playerScript.BackwardSpeed *= 1.1f;
-        playerScript.StrafeSpeed *= 1.1f;
+        playerScript.ForwardSpeed = (float)Math.Round(Mathf.Log(8 + speedLevel - 1, 8) * playerScript.baseSpeed, 2);
+        playerScript.BackwardSpeed = playerScript.ForwardSpeed / 2;
+        playerScript.StrafeSpeed = playerScript.ForwardSpeed / 2;
         updateStatsText();
+    }
+
+    public void updateLevelText(String identifier, int level)
+    {
+        String obj = identifier + "Level";
+        GameObject.Find(obj).GetComponent<TextMeshProUGUI>().text = "Lvl. " + level;
     }
 
     // Called after stats are updated, displays the current values
     public void updateStatsText()
     {
-        GameObject.Find("MovementSpeedText").GetComponent<Text>().text = " Movement Speed: " + playerScript.ForwardSpeed;
-        GameObject.Find("AttackSpeedText").GetComponent<Text>().text = " Attack Speed: " + playerScript.attackSpeedAmount;
-        GameObject.Find("ADText").GetComponent<Text>().text = " Attack Damage: " + playerScript.damage;
-        GameObject.Find("HealthText").GetComponent<Text>().text = " Health: " + playerScript.maxHealth;
+        GameObject.Find("MovementSpeedText").GetComponent<Text>().text = " Movement Speed: " + Math.Round(playerScript.ForwardSpeed,2);
+        GameObject.Find("AttackSpeedText").GetComponent<Text>().text = " Attack Speed: " + Math.Round(playerScript.attackSpeedAmount,2);
+        GameObject.Find("ADText").GetComponent<Text>().text = " Attack Damage: " + Math.Round(playerScript.damage,1);
+        GameObject.Find("HealthText").GetComponent<Text>().text = " Health: " + Math.Round(playerScript.maxHealth,1);
     }
 }

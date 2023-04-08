@@ -16,8 +16,15 @@ public class PlaneNavigationBaker : MonoBehaviour
 
     private void Update()
     {
-        if (Vector3.Distance(player.transform.position, transform.position) > (25/2))
+        if (Vector3.Distance(player.transform.position, transform.position) > (surface.size.x/2))
         {
+            foreach (Transform child in GameObject.Find("Enemies").transform)
+            {
+                if (Vector3.Distance(player.transform.position, child.position) > surface.size.x/2)
+                {
+                    Destroy(child.gameObject);
+                }
+            }
             transform.position = new Vector3(player.transform.position.x, 1 ,player.transform.position.z);
             bake();
         }

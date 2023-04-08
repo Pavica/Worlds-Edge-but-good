@@ -1,20 +1,24 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityStandardAssets.Characters.FirstPerson;
 
 [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CapsuleCollider))]
     public class RigidbodyFirstPersonController : MonoBehaviour
     {
-        public float ForwardSpeed = 8.0f;   // Speed when walking forward
-        public float BackwardSpeed = 4.0f;  // Speed when walking backwards
-        public float StrafeSpeed = 4.0f;    // Speed when walking sideways
-        public float RunMultiplier = 2.0f;   // Speed when sprinting
+        [HideInInspector]
+        public float ForwardSpeed;   // Speed when walking forward
+        [HideInInspector]
+        public float BackwardSpeed;  // Speed when walking backwards
+        [HideInInspector]
+        public float StrafeSpeed;    // Speed when walking sideways
+        public float RunMultiplier;   // Speed when sprinting
         public KeyCode RunKey = KeyCode.LeftShift;
-        public float JumpForce = 30f;
+        public float JumpForce;
         public AnimationCurve SlopeCurveModifier = new AnimationCurve(new Keyframe(-90.0f, 1.0f), new Keyframe(0.0f, 1.0f), new Keyframe(90.0f, 0.0f));
-        [HideInInspector] public float CurrentTargetSpeed = 8f;
+        [HideInInspector] public float CurrentTargetSpeed;
         private bool m_Running;
             
         public void UpdateDesiredTargetSpeed(Vector2 input)
@@ -100,29 +104,18 @@ using UnityStandardAssets.Characters.FirstPerson;
             mouseLook.Init(transform, cam.transform);
 
             //our code
+            maxHealth = baseMaxHealth;
             health = maxHealth;
-            healthBar.SetMaxHealth(maxHealth);
+            damage = baseDamage;
+            attackSpeedAmount = baseAttackSpeed;
+           
+            healthBar.setMaxHealth(maxHealth);
+
+            ForwardSpeed = baseSpeed;
+            StrafeSpeed = baseSpeed / 2;
+            BackwardSpeed = baseSpeed / 2;
 
             anim = sword.GetComponent<Animator>();
-            enemy = GameObject.Find("Enemy").transform;
-            enemyS = GameObject.Find("EnemyS").transform;
-            pauseMenu = GameObject.Find("PauseMenuCanvas");
-            StartCoroutine(spawnEnemy(50));
-        }
-
-        IEnumerator spawnEnemy(float time)
-        {
-            while (true)
-            {
-                if(!pauseMenu.GetComponent<PauseMenu>().GamePaused)
-                {
-                    float x = UnityEngine.Random.Range(transform.position.x - 10, transform.position.x + 10);
-                    float z = UnityEngine.Random.Range(transform.position.z - 10, transform.position.z + 10);
-                    Instantiate(enemy, new Vector3(6, -2, z), Quaternion.identity, GameObject.Find("Enemies").transform);
-                    Instantiate(enemyS, new Vector3(3, -2, z), Quaternion.identity, GameObject.Find("Enemies").transform);
-                }
-            yield return new WaitForSecondsRealtime(time);
-            }
         }
 
     private void Update()
@@ -132,19 +125,19 @@ using UnityStandardAssets.Characters.FirstPerson;
                 Debug.Break();
             }
 
-            RotateView();
 
             if (Input.GetButtonDown("Jump") && !m_Jump)
             {
                 m_Jump = true;
             }
-
-            //our code
-            hitEnemy();
-        }
+    }
 
     private void FixedUpdate()
-        {
+    {
+            //our code
+            hitEnemy();
+
+            RotateView();
             GroundCheck();
             Vector2 input = GetInput();
 
@@ -190,7 +183,7 @@ using UnityStandardAssets.Characters.FirstPerson;
                 }
             }
             m_Jump = false;
-        }
+    }
 
 
         private float SlopeMultiplier()
@@ -213,7 +206,6 @@ using UnityStandardAssets.Characters.FirstPerson;
                 }
             }
         }
-
 
         private Vector2 GetInput()
         {
@@ -271,28 +263,34 @@ using UnityStandardAssets.Characters.FirstPerson;
         //our code ----------------------------------------------------------------
         public GameObject sword;
         public Animator anim;
-        public Transform enemy;
-        public Transform enemyS;
         public HealthBar healthBar;
         public GameObject pauseMenu;
 
-        public float attackSpeedAmount = 1f;
+        [HideInInspector]
+        public float attackSpeedAmount;
+        public float baseAttackSpeed;  
 
+        public float baseDamage;
+        public float baseMaxHealth;
+        [HideInInspector]
         public float damage;
-        float health;
+        [HideInInspector]
+        public float health;
+        [HideInInspector]
         public float maxHealth;
-       
-        private void OnCollisionEnter(Collision collision)
+        [HideInInspector]
+        public float attackingEnemyDamage = 10;
+        public float baseSpeed;
+        [HideInInspector]
+        public bool attackFinished = true;
+
+         private void OnCollisionEnter(Collision collision)
         {
             if (collision.gameObject.tag == "rock")
             {
                 Debug.Log("Enemy hit the player");
-                TakeDamage(enemy.GetComponent<EnemyAiTutorial>().damage);
-
-                Debug.Log("Shark hit the player");
-                TakeDamage(enemyS.GetComponent<EnemyAiTutorial>().damage);
-
-            Debug.Log("Player HP:" + health);
+                TakeDamage(attackingEnemyDamage);
+                Debug.Log("Player HP:" + health);
             }
         }
 
@@ -301,42 +299,50 @@ using UnityStandardAssets.Characters.FirstPerson;
             health -= damage;
 
             if (health <= 0) Invoke(nameof(DestroyPlayer), 0.5f);
-            healthBar.SetHealth(health);
+            healthBar.setHealth(health);
         }
 
         public void resetHealth()
         {
             health = maxHealth;
-            healthBar.SetHealth(maxHealth);
+            healthBar.setHealth(maxHealth);
         }
 
         private void DestroyPlayer()
         {
-            gameObject.transform.position = new Vector3(0, 5, 0);
-            resetHealth();
-            
-            foreach (Transform child in GameObject.Find("Enemies").transform)
-            {
-                Destroy(child.gameObject);
-            }
+            SceneManager.LoadScene(2);
         }
 
         private void hitEnemy()
         {
             if (Input.GetKey(KeyCode.Mouse0))
             {
+ 
                 anim.SetTrigger("attack");
+
+                if (attackFinished)
+                {
+                    attackFinished = false;
+
+                Vector3 pos = cam.transform.position + cam.transform.forward * 1;
+                Vector3 scale = new Vector3(0.25f, 0.5f, 2);
+                Quaternion rotation = cam.transform.rotation;
+
+                //visualize the attack range
+                //GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                //cube.transform.position = pos;
+                //cube.transform.rotation = rotation;
+                //cube.transform.localScale = scale;
                 
-            }
-
-            if (!anim.GetBool("attack"))
-            {
-                sword.GetComponent<BoxCollider>().enabled = false;
-            }
-            else
-            {
-                sword.GetComponent<BoxCollider>().enabled = true;
-
+                Collider[] hitColliders = Physics.OverlapBox(pos, scale, rotation);
+                foreach (var hitCollider in hitColliders)
+                    {
+                        if (hitCollider.name == "EnemyLegs(Clone)" || hitCollider.name == "EnemyShark(Clone)" || hitCollider.name == "EnemySlime(Clone)")
+                            {
+                                hitCollider.gameObject.GetComponent<EnemyAiTutorial>().getHit();
+                        }
+                    }
+                } 
             }
         }
     }

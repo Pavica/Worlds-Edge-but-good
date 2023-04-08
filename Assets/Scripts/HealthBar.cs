@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,22 +14,20 @@ public class HealthBar : MonoBehaviour
 	public TextMeshProUGUI healthText;
 
 	private float maxHealth;
-	public void SetMaxHealth(float health)
+	public void setMaxHealth(float health)
 	{
 		slider.maxValue = health;
 		slider.value = health;
 		fill.color = gradient.Evaluate(1f);
 
-		maxHealth = health;
+		maxHealth = (float)Math.Round(health,1);
 		healthText.SetText(maxHealth + "/" + maxHealth);
 	}
 
-	public void SetHealth(float health)
+	public void setHealth(float health)
 	{
-		slider.value = health;
+		slider.value = (float)Math.Round(health,1);
 		fill.color = gradient.Evaluate(slider.normalizedValue);
-
-		healthText.SetText(health + "/" + maxHealth);
+		healthText.SetText((float)Math.Round(health,1) + "/" + maxHealth);
 	}
-
 }
